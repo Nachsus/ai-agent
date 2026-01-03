@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 import argparse
+from prompts import system_prompt
 
 parser = argparse.ArgumentParser(description="ai-agent")
 parser.add_argument('user_prompt', type=str, help="User prompt")
@@ -18,7 +19,11 @@ if not api_key:
 
 client = genai.Client(api_key=api_key)
 
-response = client.models.generate_content(model="gemini-2.5-flash", contents=messages)
+response = client.models.generate_content(
+    model="gemini-2.5-flash", 
+    contents=messages,
+    config=types.GenerateContentConfig(system_instruction=system_prompt)
+)
 
 if not response or not response.usage_metadata:
     raise RuntimeError("response seems to have failed")
